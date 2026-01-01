@@ -92,7 +92,8 @@ namespace DriftRacer.Car
         {
             if (Mathf.Abs(steeringInput) > 0.01f && currentSpeed > 0.5f)
             {
-                float turn = steeringInput * currentTurnRate * Time.fixedDeltaTime;
+                float speedFactor = Mathf.Clamp01(currentSpeed / carData.maxSpeed);
+                float turn = steeringInput * currentTurnRate * speedFactor * Time.fixedDeltaTime;
                 float rotationAngle = -turn;
                 rb.MoveRotation(rb.rotation + rotationAngle);
             }

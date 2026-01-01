@@ -22,6 +22,9 @@ namespace DriftRacer.Car
         private bool handbrakeInput = false;
         private bool brakeInput = false;
 
+        [Header("Handbrake Settings")]
+        [SerializeField] private float handbrakeSpeedReduction = 0.7f;
+
         [Header("Visual")]
         [SerializeField] private GameObject driftParticles;
         [SerializeField] private TrailRenderer[] tireMarks;
@@ -84,7 +87,14 @@ namespace DriftRacer.Car
 
         private void FixedUpdate()
         {
-            carPhysics.SetInput(throttleInput, steeringInput, brakeInput);
+            float effectiveThrottle = throttleInput;
+
+            if (handbrakeInput)
+            {
+                effectiveThrottle *= handbrakeSpeedReduction;
+            }
+
+            carPhysics.SetInput(effectiveThrottle, steeringInput, brakeInput);
         }
 
         private void OnDriftStarted()

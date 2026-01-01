@@ -20,6 +20,7 @@ namespace DriftRacer.Car
         [Header("Drift Settings")]
         [SerializeField] private float perfectDriftAngleMin = 25f;
         [SerializeField] private float perfectDriftAngleMax = 45f;
+        [SerializeField] private float driftBoostForce = 2f;
 
         [Header("Input")]
         private bool handbrakePressed = false;
@@ -87,7 +88,20 @@ namespace DriftRacer.Car
             carPhysics.SetFriction(carData.driftFriction);
             carPhysics.SetTurnRate(carData.driftTurnRate);
 
+            ApplyDriftBoost();
+
             OnDriftStart?.Invoke();
+        }
+
+        private void ApplyDriftBoost()
+        {
+            Rigidbody2D rb = carPhysics.GetComponent<Rigidbody2D>();
+            if (rb != null && currentDriftAngle != 0)
+            {
+                float direction = Mathf.Sign(currentDriftAngle);
+                Vector2 sidewaysForce = transform.right * direction * driftBoostForce;
+                rb.AddForce(sidewaysForce, ForceMode2D.Impulse);
+            }
         }
 
         private void UpdateDrift()

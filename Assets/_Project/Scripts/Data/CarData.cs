@@ -12,16 +12,16 @@ namespace DriftRacer.Data
         public bool isUnlockedByDefault = false;
 
         [Header("Base Stats")]
-        [Range(5f, 20f)] public float maxSpeed = 10f;
-        [Range(2f, 15f)] public float acceleration = 5f;
+        [Range(5f, 30f)] public float maxSpeed = 10f;
+        [Range(2f, 25f)] public float acceleration = 5f;
         [Range(50f, 200f)] public float turnRate = 100f;
         [Range(0.5f, 2f)] public float brakePower = 1f;
 
         [Header("Drift Stats")]
-        [Range(0.01f, 0.3f)] public float driftFriction = 0.1f;
-        [Range(50f, 150f)] public float driftTurnRate = 80f;
-        [Range(1f, 5f)] public float minDriftSpeed = 2f;
-        [Range(10f, 45f)] public float minDriftAngle = 15f;
+        [Range(0.01f, 0.5f)] public float driftFriction = 0.05f;
+        [Range(80f, 250f)] public float driftTurnRate = 150f;
+        [Range(1f, 5f)] public float minDriftSpeed = 1.5f;
+        [Range(5f, 45f)] public float minDriftAngle = 8f;
 
         [Header("Physics")]
         [Range(0.5f, 3f)] public float mass = 1f;
