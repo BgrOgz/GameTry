@@ -20,7 +20,8 @@ namespace DriftRacer.Car
         [Header("Drift Settings")]
         [SerializeField] private float perfectDriftAngleMin = 25f;
         [SerializeField] private float perfectDriftAngleMax = 45f;
-        [SerializeField] private float driftBoostForce = 2f;
+        [SerializeField] private float driftBoostForce = 5f;
+        [SerializeField] private bool forceDriftWhenHandbrake = true;
 
         [Header("Input")]
         private bool handbrakePressed = false;
@@ -61,15 +62,26 @@ namespace DriftRacer.Car
             currentDriftAngle = carPhysics.GetDriftAngle();
             float speed = carPhysics.CurrentSpeed;
 
-            bool shouldDrift = handbrakePressed &&
-                               speed >= carData.minDriftSpeed &&
-                               Mathf.Abs(currentDriftAngle) >= carData.minDriftAngle;
+            bool shouldDrift;
+
+            if (forceDriftWhenHandbrake)
+            {
+                // More lenient: Just need handbrake + some speed
+                shouldDrift = handbrakePressed && speed >= (carData.minDriftSpeed * 0.5f);
+            }
+            else
+            {
+                // Original: Need handbrake + speed + angle
+                shouldDrift = handbrakePressed &&
+                             speed >= carData.minDriftSpeed &&
+                             Mathf.Abs(currentDriftAngle) >= carData.minDriftAngle;
+            }
 
             if (shouldDrift && !isDrifting)
             {
                 StartDrift();
             }
-            else if (!shouldDrift && isDrifting)
+            else if (!handbrakePressed && isDrifting)
             {
                 EndDrift();
             }
@@ -96,11 +108,21 @@ namespace DriftRacer.Car
         private void ApplyDriftBoost()
         {
             Rigidbody2D rb = carPhysics.GetComponent<Rigidbody2D>();
-            if (rb != null && currentDriftAngle != 0)
+            if (rb != null)
             {
-                float direction = Mathf.Sign(currentDriftAngle);
-                Vector2 sidewaysForce = transform.right * direction * driftBoostForce;
-                rb.AddForce(sidewaysForce, ForceMode2D.Impulse);
+                // Get steering direction from InputManager
+                float steering = 0f;
+                if (DriftRacer.Input.InputManager.Instance != null)
+                {
+                    steering = DriftRacer.Input.InputManager.Instance.GetSteering();
+                }
+
+                if (Mathf.Abs(steering) > 0.1f)
+                {
+                    // Apply force in the direction of steering
+                    Vector2 sidewaysForce = transform.right * steering * driftBoostForce;
+                    rb.AddForce(sidewaysForce, ForceMode2D.Impulse);
+                }
             }
         }
 

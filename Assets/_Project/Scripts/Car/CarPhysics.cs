@@ -104,9 +104,17 @@ namespace DriftRacer.Car
             Vector2 forwardVelocity = transform.up * Vector2.Dot(rb.velocity, transform.up);
             Vector2 rightVelocity = transform.right * Vector2.Dot(rb.velocity, transform.right);
 
-            rb.velocity = forwardVelocity + rightVelocity * (1f - currentFriction);
+            float lateralDamping = 1f - currentFriction;
+            rb.velocity = forwardVelocity + rightVelocity * lateralDamping;
 
-            rb.velocity *= carData.velocityDamping;
+            if (lateralDamping < 0.5f)
+            {
+                rb.velocity *= 0.98f;
+            }
+            else
+            {
+                rb.velocity *= carData.velocityDamping;
+            }
         }
 
         private void UpdateSpeed()
