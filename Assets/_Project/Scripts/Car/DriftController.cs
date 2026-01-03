@@ -136,27 +136,27 @@ namespace DriftRacer.Car
             float scoreThisFrame = driftQuality * Time.deltaTime;
             OnDriftScore?.Invoke(scoreThisFrame);
 
-            // Apply continuous sideways force during drift
-            ApplyContinuousDriftForce();
+            // Limit sideways velocity to prevent flying
+            LimitSidewaysVelocity();
         }
 
-        private void ApplyContinuousDriftForce()
+        private void LimitSidewaysVelocity()
         {
             Rigidbody2D rb = carPhysics.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            if (rb != null && carData != null)
             {
-                // Get steering direction
-                float steering = 0f;
-                if (DriftRacer.Input.InputManager.Instance != null)
-                {
-                    steering = DriftRacer.Input.InputManager.Instance.GetSteering();
-                }
+                // Get current sideways velocity
+                float sidewaysVelocity = Vector2.Dot(rb.velocity, transform.right);
 
-                if (Mathf.Abs(steering) > 0.1f)
+                // Cap sideways velocity to prevent flying
+                float maxSidewaysVelocity = carData.maxSpeed * 0.6f;
+
+                if (Mathf.Abs(sidewaysVelocity) > maxSidewaysVelocity)
                 {
-                    // Apply gentle continuous sideways force to maintain slide
-                    Vector2 sidewaysForce = transform.right * steering * driftBoostForce * 0.05f;
-                    rb.AddForce(sidewaysForce, ForceMode2D.Force);
+                    // Clamp the sideways component
+                    Vector2 forwardVelocity = transform.up * Vector2.Dot(rb.velocity, transform.up);
+                    Vector2 rightVelocity = transform.right * Mathf.Sign(sidewaysVelocity) * maxSidewaysVelocity;
+                    rb.velocity = forwardVelocity + rightVelocity;
                 }
             }
         }
