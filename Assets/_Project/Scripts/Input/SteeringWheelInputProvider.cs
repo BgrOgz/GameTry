@@ -9,7 +9,6 @@ namespace DriftRacer.Input
         [SerializeField] private bool handbrakePressed = false;
 
         [Header("Settings")]
-        [SerializeField] private float steeringSensitivity = 2f;
         [SerializeField] private float returnSpeed = 5f;
 
         public void SetSteering(float value)

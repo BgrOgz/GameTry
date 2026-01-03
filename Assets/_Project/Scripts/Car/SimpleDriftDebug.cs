@@ -29,12 +29,12 @@ namespace DriftRacer.Car
             }
 
             // Check if spacebar is being pressed
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
             {
                 Debug.Log("SPACEBAR PRESSED!");
             }
 
-            if (Input.GetKey(KeyCode.Space))
+            if (UnityEngine.Input.GetKey(KeyCode.Space))
             {
                 Debug.Log("SPACEBAR HELD!");
             }
@@ -56,7 +56,7 @@ namespace DriftRacer.Car
             }
 
             // Spacebar check
-            bool spacePressed = Input.GetKey(KeyCode.Space);
+            bool spacePressed = UnityEngine.Input.GetKey(KeyCode.Space);
             style.normal.textColor = spacePressed ? Color.green : Color.red;
             GUI.Label(new Rect(10, y, 400, 30), $"SPACEBAR: {(spacePressed ? "PRESSED" : "NOT PRESSED")}", style);
             y += 35;
