@@ -16,14 +16,14 @@ MonoBehaviour:
   carSprite: {fileID: 0}
   unlockCost: 1000
   isUnlockedByDefault: 0
-  maxSpeed: 10
-  acceleration: 5
-  turnRate: 100
+  maxSpeed: 18
+  acceleration: 12
+  turnRate: 120
   brakePower: 1
-  driftFriction: 0.1
-  driftTurnRate: 80
-  minDriftSpeed: 2
-  minDriftAngle: 15
+  driftFriction: 0.05
+  driftTurnRate: 150
+  minDriftSpeed: 1.5
+  minDriftAngle: 8
   mass: 1
   normalFriction: 0.5
   velocityDamping: 0.9

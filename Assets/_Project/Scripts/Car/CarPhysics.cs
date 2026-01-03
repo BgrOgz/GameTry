@@ -14,6 +14,7 @@ namespace DriftRacer.Car
         [SerializeField] private float currentSpeed = 0f;
         [SerializeField] private float currentTurnRate = 100f;
         private float currentFriction = 0.5f;
+        private bool isDrifting = false;
 
         [Header("Input Values")]
         private float throttleInput = 0f;
@@ -56,6 +57,11 @@ namespace DriftRacer.Car
         public void SetTurnRate(float turnRate)
         {
             currentTurnRate = turnRate;
+        }
+
+        public void SetDrifting(bool drifting)
+        {
+            isDrifting = drifting;
         }
 
         private void FixedUpdate()
@@ -105,9 +111,18 @@ namespace DriftRacer.Car
             Vector2 rightVelocity = transform.right * Vector2.Dot(rb.velocity, transform.right);
 
             float lateralDamping = 1f - currentFriction;
+
+            // If drifting, keep MORE sideways velocity for dramatic slide
+            if (isDrifting && carData.sidewaysSlideMultiplier > 1f)
+            {
+                // Amplify sideways velocity during drift
+                rightVelocity *= carData.sidewaysSlideMultiplier;
+                lateralDamping = 0.95f; // Keep almost all sideways velocity
+            }
+
             rb.velocity = forwardVelocity + rightVelocity * lateralDamping;
 
-            if (lateralDamping < 0.5f)
+            if (lateralDamping < 0.5f && !isDrifting)
             {
                 rb.velocity *= 0.98f;
             }

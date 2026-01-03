@@ -99,6 +99,7 @@ namespace DriftRacer.Car
 
             carPhysics.SetFriction(carData.driftFriction);
             carPhysics.SetTurnRate(carData.driftTurnRate);
+            carPhysics.SetDrifting(true);
 
             ApplyDriftBoost();
 
@@ -134,6 +135,30 @@ namespace DriftRacer.Car
 
             float scoreThisFrame = driftQuality * Time.deltaTime;
             OnDriftScore?.Invoke(scoreThisFrame);
+
+            // Apply continuous sideways force during drift
+            ApplyContinuousDriftForce();
+        }
+
+        private void ApplyContinuousDriftForce()
+        {
+            Rigidbody2D rb = carPhysics.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                // Get steering direction
+                float steering = 0f;
+                if (DriftRacer.Input.InputManager.Instance != null)
+                {
+                    steering = DriftRacer.Input.InputManager.Instance.GetSteering();
+                }
+
+                if (Mathf.Abs(steering) > 0.1f)
+                {
+                    // Apply continuous sideways force to maintain slide
+                    Vector2 sidewaysForce = transform.right * steering * driftBoostForce * 0.5f;
+                    rb.AddForce(sidewaysForce, ForceMode2D.Force);
+                }
+            }
         }
 
         private void EndDrift()
@@ -144,6 +169,7 @@ namespace DriftRacer.Car
 
             carPhysics.SetFriction(carData.normalFriction);
             carPhysics.SetTurnRate(carData.turnRate);
+            carPhysics.SetDrifting(false);
 
             OnDriftEnd?.Invoke();
         }
