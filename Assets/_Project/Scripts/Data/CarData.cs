@@ -22,7 +22,7 @@ namespace DriftRacer.Data
         [Range(80f, 250f)] public float driftTurnRate = 150f;
         [Range(1f, 5f)] public float minDriftSpeed = 1.5f;
         [Range(5f, 45f)] public float minDriftAngle = 8f;
-        [Range(1f, 5f)] public float sidewaysSlideMultiplier = 1.5f;
+        [Range(1f, 10f)] public float sidewaysSlideMultiplier = 5f;
 
         [Header("Physics")]
         [Range(0.5f, 3f)] public float mass = 1f;

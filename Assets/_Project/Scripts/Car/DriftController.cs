@@ -148,8 +148,9 @@ namespace DriftRacer.Car
                 // Get current sideways velocity
                 float sidewaysVelocity = Vector2.Dot(rb.velocity, transform.right);
 
-                // Cap sideways velocity to prevent flying
-                float maxSidewaysVelocity = carData.maxSpeed * 0.6f;
+                // Cap sideways velocity to prevent flying (scales with slide multiplier)
+                float capMultiplier = Mathf.Lerp(0.6f, 0.8f, (carData.sidewaysSlideMultiplier - 1f) / 9f);
+                float maxSidewaysVelocity = carData.maxSpeed * capMultiplier;
 
                 if (Mathf.Abs(sidewaysVelocity) > maxSidewaysVelocity)
                 {
