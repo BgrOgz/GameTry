@@ -16,12 +16,14 @@ namespace DriftRacer.Car
         [SerializeField] private float driftTime = 0f;
         [SerializeField] private float currentDriftAngle = 0f;
         [SerializeField] private float driftQuality = 0f;
+        private float lastDriftDirection = 0f;
 
         [Header("Drift Settings")]
         [SerializeField] private float perfectDriftAngleMin = 25f;
         [SerializeField] private float perfectDriftAngleMax = 45f;
         [SerializeField] private float driftBoostForce = 1.5f;
         [SerializeField] private bool forceDriftWhenHandbrake = true;
+        [SerializeField] private float directionChangeSmoothing = 0.5f;
 
         [Header("Input")]
         private bool handbrakePressed = false;
@@ -136,8 +138,46 @@ namespace DriftRacer.Car
             float scoreThisFrame = driftQuality * Time.deltaTime;
             OnDriftScore?.Invoke(scoreThisFrame);
 
+            // Check for direction change
+            CheckDriftDirectionChange();
+
             // Limit sideways velocity to prevent flying
             LimitSidewaysVelocity();
+        }
+
+        private void CheckDriftDirectionChange()
+        {
+            // Get current steering direction
+            float currentSteering = 0f;
+            if (DriftRacer.Input.InputManager.Instance != null)
+            {
+                currentSteering = DriftRacer.Input.InputManager.Instance.GetSteering();
+            }
+
+            if (Mathf.Abs(currentSteering) > 0.1f)
+            {
+                float currentDirection = Mathf.Sign(currentSteering);
+
+                // If direction changed, smoothly reduce sideways velocity for smooth transition
+                if (lastDriftDirection != 0 && currentDirection != lastDriftDirection)
+                {
+                    Rigidbody2D rb = carPhysics.GetComponent<Rigidbody2D>();
+                    if (rb != null)
+                    {
+                        // Smoothly reduce sideways velocity for transition
+                        Vector2 forwardVelocity = transform.up * Vector2.Dot(rb.velocity, transform.up);
+                        Vector2 rightVelocity = transform.right * Vector2.Dot(rb.velocity, transform.right);
+
+                        // Lerp towards reduced sideways velocity
+                        Vector2 targetRightVelocity = rightVelocity * directionChangeSmoothing;
+                        rightVelocity = Vector2.Lerp(rightVelocity, targetRightVelocity, Time.deltaTime * 10f);
+
+                        rb.velocity = forwardVelocity + rightVelocity;
+                    }
+                }
+
+                lastDriftDirection = currentDirection;
+            }
         }
 
         private void LimitSidewaysVelocity()
@@ -167,6 +207,7 @@ namespace DriftRacer.Car
             isDrifting = false;
             driftTime = 0f;
             driftQuality = 0f;
+            lastDriftDirection = 0f;
 
             carPhysics.SetFriction(carData.normalFriction);
             carPhysics.SetTurnRate(carData.turnRate);
