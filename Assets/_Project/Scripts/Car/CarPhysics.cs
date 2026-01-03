@@ -112,12 +112,13 @@ namespace DriftRacer.Car
 
             float lateralDamping = 1f - currentFriction;
 
-            // If drifting, keep MORE sideways velocity for dramatic slide
-            if (isDrifting && carData.sidewaysSlideMultiplier > 1f)
+            // If drifting, keep more sideways velocity for slide feel
+            if (isDrifting)
             {
-                // Amplify sideways velocity during drift
-                rightVelocity *= carData.sidewaysSlideMultiplier;
-                lateralDamping = 0.95f; // Keep almost all sideways velocity
+                // Slightly amplify sideways velocity during drift (subtle effect)
+                float amplification = 1f + ((carData.sidewaysSlideMultiplier - 1f) * 0.3f);
+                rightVelocity *= amplification;
+                lateralDamping = Mathf.Max(lateralDamping, 0.85f); // Keep more sideways velocity
             }
 
             rb.velocity = forwardVelocity + rightVelocity * lateralDamping;

@@ -20,7 +20,7 @@ namespace DriftRacer.Car
         [Header("Drift Settings")]
         [SerializeField] private float perfectDriftAngleMin = 25f;
         [SerializeField] private float perfectDriftAngleMax = 45f;
-        [SerializeField] private float driftBoostForce = 5f;
+        [SerializeField] private float driftBoostForce = 1.5f;
         [SerializeField] private bool forceDriftWhenHandbrake = true;
 
         [Header("Input")]
@@ -154,8 +154,8 @@ namespace DriftRacer.Car
 
                 if (Mathf.Abs(steering) > 0.1f)
                 {
-                    // Apply continuous sideways force to maintain slide
-                    Vector2 sidewaysForce = transform.right * steering * driftBoostForce * 0.5f;
+                    // Apply gentle continuous sideways force to maintain slide
+                    Vector2 sidewaysForce = transform.right * steering * driftBoostForce * 0.05f;
                     rb.AddForce(sidewaysForce, ForceMode2D.Force);
                 }
             }
